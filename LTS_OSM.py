@@ -59,10 +59,12 @@ tags_df.columns = ["tag", "tagvalue"]
 tag_value_counts = tags_df.value_counts().reset_index() # count all the unique tag and value combinations
 tag_counts = tags_df['tag'].value_counts().reset_index() # count all the unique tags
 
-# explore the tags that start with 'cycleway'
-tag_counts[tag_counts['index'].str.contains('cycleway')]
+print(tag_counts)
 
-way_tags = list(tag_counts['index']) # all unique tags from the OSM Toronto download
+# explore the tags that start with 'cycleway'
+tag_counts[tag_counts['tag'].str.contains('cycleway')]
+
+way_tags = list(tag_counts['tag']) # all unique tags from the OSM Toronto download
 
 # add the above list to the global osmnx settings
 ox.settings.useful_tags_way += way_tags
@@ -92,7 +94,7 @@ else:
         retain_all=True,
         truncate_by_edge=True,
         simplify=False,
-        custom_filter=osmfilter2,
+        custom_filter=osmfilter,
     )
     # save graph
     print("saving graph")

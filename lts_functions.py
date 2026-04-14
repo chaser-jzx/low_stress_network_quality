@@ -1,4 +1,4 @@
-import pytest
+#import pytest
 import pandas as pd
 import numpy as np
 
@@ -196,13 +196,13 @@ def bike_lane_analysis_no_parking(gdf_edges):
     gdf_edges = get_max_speed(gdf_edges)
     
     # assign widths that are a string to nan
-    gdf_edges.loc[gdf_edges[['width']].applymap(lambda x: isinstance(x, str))['width'], 'width'] = np.nan
+    gdf_edges.loc[gdf_edges[['width']].apply(lambda x: isinstance(x, str))['width'], 'width'] = np.nan
     
     # create a list of lts conditions
     # When multiple conditions are satisfied, the first one encountered in conditions is used
     conditions = [
         (gdf_edges['lanes_assumed'] >= 3) & (gdf_edges['maxspeed_assumed'] <= 56),
-        (gdf_edges[['width']].applymap(lambda x: isinstance(x, float))['width']) & (gdf_edges['width'] <= 1.7),
+        (gdf_edges[['width']].apply(lambda x: isinstance(x, float))['width']) & (gdf_edges['width'] <= 1.7),
         (gdf_edges['maxspeed_assumed'] > 50) & (gdf_edges['maxspeed_assumed'] <= 56),
         (gdf_edges['maxspeed_assumed'] > 56),
         (gdf_edges['highway'] != 'residential')
