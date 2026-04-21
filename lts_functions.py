@@ -141,12 +141,16 @@ def get_max_speed(gdf_edges, national=40, local=50, motorway=100, primary=80, se
     pd.options.mode.chained_assignment = None  # default='warn'
     # create a list of conditions
     # When multiple conditions are satisfied, the first one encountered in conditions is used
+
+    ## if maxspeed includes text 'mph' clear and convert to kph
+    gdf_edges['maxspeed'] = gdf_edges['maxspeed'].str.replace(' mph','').fillna(-1).astype(int)*1.609344
+
     conditions = [
         (gdf_edges['maxspeed'] == 'national'),
-        (gdf_edges['maxspeed'].isna()) & (gdf_edges['highway'] == 'motorway'),
-        (gdf_edges['maxspeed'].isna()) & (gdf_edges['highway'] == 'primary'),
-        (gdf_edges['maxspeed'].isna()) & (gdf_edges['highway'] == 'secondary'),
-        (gdf_edges['maxspeed'].isna()),
+        (gdf_edges['maxspeed'] < 0) & (gdf_edges['highway'] == 'motorway'),
+        (gdf_edges['maxspeed'] < 0) & (gdf_edges['highway'] == 'primary'),
+        (gdf_edges['maxspeed'] < 0) & (gdf_edges['highway'] == 'secondary'),
+        (gdf_edges['maxspeed'] < 0),
         ]
 
     # create a list of the values we want to assign for each condition
@@ -157,10 +161,6 @@ def get_max_speed(gdf_edges, national=40, local=50, motorway=100, primary=80, se
     
     # if multiple speed values present, use the largest one
     gdf_edges['maxspeed_assumed'] = gdf_edges['maxspeed_assumed'].apply(lambda x: np.array(x, dtype = 'int')).apply(lambda x: np.max(x)) 
-
-    ## if maxspeed includes text 'mph' clear and convert to kph
-    gdf_edges.loc[gdf_edges['maxspeed'].str.contains('mph'), 'maxspeed']=gdf_edges['maxspeed'].str.replace(' mph','').astype(int)*1.609344
-    print(gdf_edges['maxspeed'])
     
     return gdf_edges
 
