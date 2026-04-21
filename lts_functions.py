@@ -137,6 +137,7 @@ def get_max_speed(gdf_edges, national=40, local=50, motorway=100, primary=80, se
     If not available, make assumptions based on road type
     This errs on the high end of assumptions
     """
+    
     pd.options.mode.chained_assignment = None  # default='warn'
     # create a list of conditions
     # When multiple conditions are satisfied, the first one encountered in conditions is used
@@ -157,6 +158,10 @@ def get_max_speed(gdf_edges, national=40, local=50, motorway=100, primary=80, se
     # if multiple speed values present, use the largest one
     gdf_edges['maxspeed_assumed'] = gdf_edges['maxspeed_assumed'].apply(lambda x: np.array(x, dtype = 'int')).apply(lambda x: np.max(x)) 
 
+    ## if maxspeed includes text 'mph' clear and convert to kph
+    gdf_edges.loc[gdf_edges['maxspeed'].str.contains('mph'), 'maxspeed']=gdf_edges['maxspeed'].str.replace(' mph','').astype(int)*1.609344
+    print(gdf_edges['maxspeed'])
+    
     return gdf_edges
 
 def bike_lane_analysis_with_parking(gdf_edges):
